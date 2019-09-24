@@ -1,0 +1,30 @@
+# Importing libraries, as per usual
+import datetime as dt
+import matplotlib.pyplot as plt
+from matplotlib import style
+import pandas as pd
+import pandas_datareader.data as web
+
+# Style of graph that we're using, e.g. CSS styling but for Python, YOU GET ME?
+style.use('ggplot')
+
+# Creating a file called goog.csv so it can be opened and viewed as a graph (Will have to call a print at a later
+# point to view it though)
+df = pd.read_csv('goog.csv', parse_dates=True, index_col=0)
+
+# database is called df, we're creating a new column called 100ma and applying it to the window that views it
+# Adding a minimum period of 0 so we're capable of viewing the 100 period MA even when there isn't data before it
+df['100ma'] = df['Adj Close'].rolling(window=100, min_periods=0).mean()
+print(df.tail())
+
+# take the first parameter of grid size, 6,1 - starting point at 0,0 row spans 5, column spans 1
+ax1 = plt.subplot2grid((6,1), (0,0), rowspan=5, colspan=1)
+# Share x axis 1 makes sure that both graphs zoom in and out together
+ax2 = plt.subplot2grid((6,1), (5,0), rowspan=1, colspan=1, sharex=ax1)
+
+# Plots a simple line
+ax1.plot(df.index, df['Adj Close'])
+ax1.plot(df.index, df['100ma'])
+ax2.bar(df.index, df['Volume'])
+
+plt.show()
